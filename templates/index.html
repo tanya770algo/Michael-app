@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👑 מיכאל המלך - תווים 🎹</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="bg-sky"></div>
+
+  <header class="app-header">
+    <div class="crown-wrap">
+      <span class="sparkle s1">✨</span>
+      <span class="sparkle s2">⭐</span>
+      <span class="sparkle s3">✨</span>
+      <div class="crown">👑</div>
+    </div>
+    <h1>מיכאל המלך <span class="subtitle">תווים</span> 🎹</h1>
+    <p class="tagline">מעלים שיר — ומגלים אילו תווים לנגן!</p>
+  </header>
+
+  <main class="container">
+
+    <!-- ===== אזור העלאה ===== -->
+    <section id="uploadSection" class="card upload-card">
+      <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="העלאת קובץ שיר">
+        <div class="drop-emoji">🎵</div>
+        <p class="drop-title">גררו לכאן קובץ שיר</p>
+        <p class="drop-sub">(MP3 / WAV / M4A)</p>
+        <p class="drop-or">— או —</p>
+        <button id="chooseBtn" class="btn btn-big">📁 בחרו קובץ מהמחשב</button>
+        <input type="file" id="fileInput" accept="audio/*" hidden>
+      </div>
+
+      <button id="demoBtn" class="btn btn-gold demo-btn">🌟 או נגנו שיר דוגמה (כוכב קטן)</button>
+
+      <div id="accuracyNotice" class="notice">
+        <span class="notice-icon">💡</span>
+        <span class="notice-text">מיכאל המלך הכי טוב בזיהוי שירים עם מנגינה ברורה (פסנתר/שירה).
+        בשירים עם הרבה כלים ביחד הוא עלול לטעות בכמה תווים — בדיוק כמו שגם אנחנו צריכים תרגול! 🎶</span>
+        <button class="notice-close" id="noticeClose" aria-label="סגירה">✕</button>
+      </div>
+    </section>
+
+    <!-- ===== מצב טעינה ===== -->
+    <div id="loading" class="loading hidden" aria-live="polite">
+      <div class="loading-crown">👑</div>
+      <p id="loadingText" class="loading-text">מיכאל המלך מקשיב לשיר...</p>
+      <div class="loading-notes"><span>🎵</span><span>🎶</span><span>🎵</span></div>
+    </div>
+
+    <!-- ===== תוצאות ===== -->
+    <section id="resultsSection" class="results hidden">
+      <div class="song-bar">
+        <h2 id="songTitle">🎶</h2>
+        <button id="uploadAnotherBtn" class="btn btn-small">⤴️ שיר אחר</button>
+      </div>
+
+      <div class="card player-card">
+        <div class="player-controls">
+          <button id="playBtn" class="btn btn-round" aria-label="נגן">▶️</button>
+          <button id="restartBtn" class="btn btn-round" aria-label="מהתחלה">⏮️</button>
+
+          <div class="speed-control" role="group" aria-label="מהירות ניגון">
+            <span class="speed-emoji" title="לאט">🐢</span>
+            <button class="speed-btn" data-rate="0.5">לאט מאוד</button>
+            <button class="speed-btn" data-rate="0.75">לאט</button>
+            <button class="speed-btn active" data-rate="1">רגיל</button>
+            <span class="speed-emoji" title="רגיל">🐇</span>
+          </div>
+        </div>
+
+        <div id="progress" class="progress" role="slider" aria-label="התקדמות בשיר" tabindex="0">
+          <div id="progressFill" class="progress-fill"></div>
+          <div id="progressKnob" class="progress-knob">🎵</div>
+        </div>
+        <div class="time-row"><span id="curTime">0:00</span><span id="totTime">0:00</span></div>
+      </div>
+
+      <h3 class="section-label">התווים של השיר 🎼</h3>
+      <div id="notesStrip" class="notes-strip" aria-label="רצף התווים"></div>
+
+      <h3 class="section-label">המקלדת שלי 🎹</h3>
+      <div id="piano" class="piano"></div>
+
+      <button id="gameBtn" class="btn btn-play-game">🎮 בואו נשחק: נגנו אחריי!</button>
+    </section>
+
+    <!-- ===== השירים שלי ===== -->
+    <section id="mySongsSection" class="card my-songs">
+      <h3 class="section-label">🎼 השירים שלי</h3>
+      <p id="noSongs" class="muted">עוד אין שירים שמורים. נתחו שיר וזה יישָמר כאן אוטומטית! 💾</p>
+      <div id="songsList" class="songs-list"></div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">בהצלחה למיכאל המלך! 👑🎶</footer>
+
+  <!-- נגן אודיו מוסתר (לשירים מקובץ) -->
+  <audio id="audioEl" preload="auto"></audio>
+
+  <!-- שכבת מצב המשחק -->
+  <div id="gameOverlay" class="game-overlay hidden"></div>
+
+  <!-- הודעות קופצות -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="{{ url_for('static', filename='js/core.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/piano.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+/* ============================================================
+   מיכאל המלך - תווים  |  עיצוב "מלכותי-ילדותי" צבעוני, RTL
+   ============================================================ */
+
+:root {
+  --royal-purple: #6a2cd6;
+  --royal-purple-dark: #4b1fa3;
+  --royal-blue: #2d7df0;
+  --sky: #4cc9f0;
+  --gold: #ffd23f;
+  --gold-deep: #f5a623;
+  --pink: #ff6fb5;
+  --green: #3ddc84;
+  --ink: #2b2350;
+  --white-soft: #fff;
+  --shadow: 0 8px 24px rgba(40, 10, 90, 0.18);
+  --radius: 22px;
+  --font: 'Varela Round', 'Heebo', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  min-height: 100vh;
+  background: linear-gradient(160deg, #7b2ff7 0%, #4364f7 45%, #4cc9f0 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+/* כוכבים עדינים ברקע */
+.bg-sky {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 12% 22%, rgba(255,255,255,.9), transparent),
+    radial-gradient(2px 2px at 78% 14%, rgba(255,255,255,.8), transparent),
+    radial-gradient(2px 2px at 33% 67%, rgba(255,255,255,.7), transparent),
+    radial-gradient(3px 3px at 64% 48%, rgba(255,255,255,.6), transparent),
+    radial-gradient(2px 2px at 88% 73%, rgba(255,255,255,.8), transparent),
+    radial-gradient(2px 2px at 49% 88%, rgba(255,255,255,.7), transparent);
+  background-repeat: no-repeat;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from { opacity: .5; } to { opacity: 1; } }
+
+.container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 16px 60px; }
+
+/* ===================== כותרת ===================== */
+.app-header { position: relative; z-index: 1; text-align: center; padding: 26px 16px 10px; }
+
+.crown-wrap { position: relative; display: inline-block; }
+.crown { font-size: 64px; animation: bob 2.4s ease-in-out infinite; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+@keyframes bob { 0%,100% { transform: translateY(0) rotate(-3deg);} 50% { transform: translateY(-10px) rotate(3deg);} }
+
+.sparkle { position: absolute; font-size: 22px; animation: pop 2.2s ease-in-out infinite; }
+.sparkle.s1 { top: -6px; right: -22px; animation-delay: .2s; }
+.sparkle.s2 { top: 6px; left: -26px; animation-delay: .8s; }
+.sparkle.s3 { bottom: -4px; right: -10px; animation-delay: 1.3s; }
+@keyframes pop { 0%,100% { transform: scale(.6); opacity: .4; } 50% { transform: scale(1.2); opacity: 1; } }
+
+.app-header h1 {
+  margin: 6px 0 4px; font-size: 46px; font-weight: 900; color: #fff;
+  text-shadow: 0 3px 0 var(--royal-purple-dark), 0 6px 14px rgba(0,0,0,.3);
+  letter-spacing: .5px;
+}
+.app-header h1 .subtitle {
+  background: var(--gold); color: var(--royal-purple-dark);
+  padding: 0 12px; border-radius: 14px; display: inline-block;
+  text-shadow: none; box-shadow: var(--shadow);
+}
+.tagline { color: #fff; opacity: .95; margin: 0; font-size: 19px; }
+
+/* ===================== כרטיסים כלליים ===================== */
+.card {
+  background: rgba(255,255,255,0.97);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  margin: 18px 0;
+}
+
+.section-label { font-size: 22px; color: #fff; margin: 22px 4px 10px; text-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.card .section-label { color: var(--royal-purple-dark); text-shadow: none; margin-top: 0; }
+
+/* ===================== כפתורים ===================== */
+.btn {
+  font-family: var(--font); font-size: 20px; font-weight: 700;
+  border: none; border-radius: 18px; padding: 14px 22px; cursor: pointer;
+  color: #fff; background: var(--royal-blue);
+  box-shadow: 0 5px 0 rgba(0,0,0,.18), var(--shadow);
+  transition: transform .08s ease, box-shadow .08s ease, filter .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.18); }
+.btn:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
+
+.btn-big { font-size: 22px; padding: 16px 28px; background: var(--royal-purple); }
+.btn-gold { background: var(--gold); color: var(--royal-purple-dark); }
+.btn-small { font-size: 16px; padding: 9px 16px; background: var(--pink); }
+.btn-round { width: 64px; height: 64px; border-radius: 50%; font-size: 26px; padding: 0; background: var(--green); }
+.btn-play-game {
+  display: block; width: 100%; font-size: 24px; padding: 18px;
+  background: linear-gradient(90deg, var(--pink), var(--gold-deep));
+  margin-top: 18px;
+}
+
+/* ===================== אזור העלאה ===================== */
+.upload-card { text-align: center; }
+.drop-zone {
+  border: 4px dashed var(--royal-purple);
+  border-radius: var(--radius);
+  padding: 30px 18px; background: #faf6ff;
+  transition: background .15s ease, transform .15s ease, border-color .15s ease;
+}
+.drop-zone.drag { background: #efe2ff; transform: scale(1.02); border-color: var(--gold-deep); }
+.drop-emoji { font-size: 56px; animation: bob 3s ease-in-out infinite; }
+.drop-title { font-size: 24px; font-weight: 700; margin: 8px 0 2px; color: var(--royal-purple-dark); }
+.drop-sub { margin: 0; color: #7a6ea8; }
+.drop-or { color: #b3a9d6; margin: 12px 0; }
+.demo-btn { margin-top: 16px; }
+
+.notice {
+  display: flex; align-items: flex-start; gap: 10px; text-align: right;
+  background: #fff7df; border: 2px solid var(--gold); border-radius: 16px;
+  padding: 12px 14px; margin-top: 16px; font-size: 16px; color: #6b5a14;
+}
+.notice.hidden { display: none; }
+.notice-icon { font-size: 22px; }
+.notice-text { flex: 1; }
+.notice-close { background: none; border: none; font-size: 18px; cursor: pointer; color: #9a8a3a; }
+
+/* ===================== טעינה ===================== */
+.loading { text-align: center; padding: 40px 16px; color: #fff; }
+.loading-crown { font-size: 70px; animation: spin 1.6s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 24px; margin: 14px 0 6px; text-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.loading-notes span { font-size: 30px; display: inline-block; animation: jump 1s ease-in-out infinite; }
+.loading-notes span:nth-child(2) { animation-delay: .2s; }
+.loading-notes span:nth-child(3) { animation-delay: .4s; }
+@keyframes jump { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-14px);} }
+
+/* ===================== תוצאות / נגן ===================== */
+.song-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.song-bar h2 { color: #fff; font-size: 26px; margin: 0; text-shadow: 0 2px 6px rgba(0,0,0,.3); word-break: break-word; }
+
+.player-card { padding: 18px; }
+.player-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.speed-control { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.speed-emoji { font-size: 24px; }
+.speed-btn {
+  font-family: var(--font); font-weight: 700; font-size: 15px; cursor: pointer;
+  border: 2px solid var(--royal-purple); background: #fff; color: var(--royal-purple-dark);
+  border-radius: 14px; padding: 7px 12px; transition: all .12s ease;
+}
+.speed-btn.active { background: var(--royal-purple); color: #fff; }
+.speed-btn:active { transform: scale(.95); }
+
+.progress { position: relative; height: 16px; background: #e9e2fb; border-radius: 10px; margin-top: 16px; cursor: pointer; overflow: hidden; }
+.progress-fill { position: absolute; top: 0; right: 0; height: 100%; width: 0%; border-radius: 10px; background: linear-gradient(90deg, var(--pink), var(--gold), var(--green), var(--sky)); transition: width .05s linear; }
+.progress-knob { position: absolute; top: 50%; right: 0%; transform: translate(50%,-50%); font-size: 18px; transition: right .05s linear; pointer-events: none; }
+.time-row { display: flex; justify-content: space-between; font-size: 14px; color: #8a7fb0; margin-top: 6px; }
+
+/* ===================== כרטיסיות תווים ===================== */
+.notes-strip {
+  display: flex; gap: 12px; overflow-x: auto; padding: 14px 6px 20px;
+  scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+}
+.notes-strip::-webkit-scrollbar { height: 10px; }
+.notes-strip::-webkit-scrollbar-thumb { background: rgba(255,255,255,.6); border-radius: 8px; }
+
+.note-card {
+  flex: 0 0 auto; width: 84px; height: 104px; border-radius: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; font-weight: 900; box-shadow: var(--shadow);
+  position: relative; transition: transform .12s ease, box-shadow .12s ease;
+  border: 4px solid rgba(255,255,255,.55);
+}
+.note-card .nname { font-size: 30px; line-height: 1; }
+.note-card .noct { font-size: 13px; opacity: .85; margin-top: 6px; }
+.note-card.sharp .nname { font-size: 26px; }
+.note-card.active {
+  transform: translateY(-10px) scale(1.16);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold), 0 0 26px 6px rgba(255,210,63,.8);
+  z-index: 2;
+  animation: cardpop .4s ease;
+}
+@keyframes cardpop { 0% { transform: translateY(-10px) scale(1.0);} 60% { transform: translateY(-14px) scale(1.22);} 100% { transform: translateY(-10px) scale(1.16);} }
+
+/* ===================== מקלדת פסנתר ===================== */
+.piano {
+  position: relative; display: flex; height: 150px; margin: 6px 0 4px;
+  background: #2b2350; padding: 10px 10px 0; border-radius: 16px; box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+.piano-inner { position: relative; display: flex; height: 100%; margin: 0 auto; direction: ltr; }
+.white-key {
+  position: relative; width: 46px; height: 100%; background: #fff;
+  border: 1px solid #cfc7e6; border-radius: 0 0 8px 8px; margin: 0 1px;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  padding-bottom: 8px; cursor: default; transition: transform .08s ease, box-shadow .08s ease;
+}
+.white-key .wlabel { font-size: 13px; font-weight: 700; color: #6a5fa0; }
+.white-key .wdot { width: 16px; height: 16px; border-radius: 50%; margin-bottom: 6px; opacity: .65; }
+.white-key.pressed { transform: translateY(4px); box-shadow: inset 0 0 0 3px var(--gold), 0 0 18px 4px rgba(255,210,63,.7); }
+.white-key.pressed .wdot { opacity: 1; transform: scale(1.25); }
+
+.black-key {
+  position: absolute; top: 0; width: 30px; height: 62%; background: #34304f;
+  border-radius: 0 0 6px 6px; z-index: 3; box-shadow: 0 3px 6px rgba(0,0,0,.4);
+  transform: translateX(-50%); transition: transform .08s ease, box-shadow .08s ease;
+}
+.black-key.pressed { background: #564f86; box-shadow: 0 0 16px 4px rgba(255,210,63,.7), inset 0 0 0 2px var(--gold); transform: translateX(-50%) translateY(3px); }
+
+/* ===================== השירים שלי ===================== */
+.songs-list { display: flex; flex-direction: column; gap: 10px; }
+.song-item {
+  display: flex; align-items: center; gap: 12px; background: #f6f2ff;
+  border-radius: 16px; padding: 12px 14px; border: 2px solid #ece3ff;
+}
+.song-item .si-emoji { font-size: 26px; }
+.song-item .si-main { flex: 1; min-width: 0; }
+.song-item .si-name { font-weight: 700; color: var(--royal-purple-dark); font-size: 18px; word-break: break-word; }
+.song-item .si-meta { font-size: 13px; color: #9588bf; }
+.song-item .si-open { background: var(--green); }
+.song-item .si-del { background: #ff6b6b; }
+.muted { color: #9588bf; text-align: center; }
+.muted.hidden { display: none; }
+
+/* ===================== מצב משחק ===================== */
+.game-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: linear-gradient(160deg, rgba(74,28,163,.97), rgba(45,125,240,.97));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; color: #fff; padding: 24px; gap: 14px;
+}
+.game-overlay.hidden { display: none; }
+.game-overlay h2 { font-size: 30px; margin: 0; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+.game-target {
+  width: 200px; height: 200px; border-radius: 36px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; color: #fff; font-weight: 900;
+  box-shadow: var(--shadow); border: 6px solid rgba(255,255,255,.6);
+}
+.game-target .gname { font-size: 76px; line-height: 1; }
+.game-target .goct { font-size: 18px; opacity: .9; }
+.game-target.hit { animation: hit .5s ease; }
+@keyframes hit { 0%{transform:scale(1);} 40%{transform:scale(1.25) rotate(6deg);} 100%{transform:scale(1);} }
+.game-feedback { font-size: 26px; min-height: 34px; font-weight: 700; }
+.game-heard { font-size: 17px; opacity: .85; min-height: 22px; }
+.game-streak { font-size: 20px; }
+.game-progress { font-size: 16px; opacity: .85; }
+.game-exit { position: absolute; top: 18px; left: 18px; }
+.game-bigbtn { background: var(--gold); color: var(--royal-purple-dark); }
+
+.confetti-piece { position: fixed; top: -20px; font-size: 22px; z-index: 60; pointer-events: none; animation: fall 1.6s linear forwards; }
+@keyframes fall { to { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
+
+/* ===================== טוסט ===================== */
+.toast {
+  position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff; padding: 14px 22px; border-radius: 16px;
+  box-shadow: var(--shadow); z-index: 70; font-size: 18px; max-width: 90vw; text-align: center;
+}
+.toast.hidden { display: none; }
+.toast.err { background: #c0392b; }
+.toast.ok { background: #2e7d4f; }
+
+/* ===================== כללי ===================== */
+.app-footer { position: relative; z-index: 1; text-align: center; color: #fff; padding: 10px 0 30px; opacity: .92; }
+.hidden { display: none; }
+
+@media (max-width: 560px) {
+  .app-header h1 { font-size: 34px; }
+  body { font-size: 18px; }
+  .note-card { width: 72px; height: 94px; }
+  .note-card .nname { font-size: 26px; }
+  .btn-round { width: 56px; height: 56px; font-size: 22px; }
+  .white-key { width: 40px; }
+}

@@ -1,0 +1,20 @@
+# סודות - לעולם לא נדחף את המפתח ל-GitHub!
+.env
+
+# דאטהבייס מקומי
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# מערכת הפעלה / עורך
+.DS_Store
+.idea/
+.vscode/

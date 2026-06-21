@@ -1,0 +1,14 @@
+# קונפיגורציית פריסה ל-Render (Blueprint).
+# כש-Render מחובר לריפו הזה הוא קורא את הקובץ ומגדיר הכול אוטומטית.
+services:
+  - type: web
+    name: michael-king
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: KLANGIO_API_KEY   # ממלאים בלוח הבקרה של Render (נשאר סודי)
+        sync: false
+      - key: KLANGIO_MODEL
+        value: piano
