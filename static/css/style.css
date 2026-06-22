@@ -169,6 +169,11 @@ body {
 .notice-text { flex: 1; }
 .notice-close { background: none; border: none; font-size: 17px; cursor: pointer; color: var(--muted); }
 
+/* "איך זה עובד" - שלושה צעדים (מגע מקצועי) */
+.howto { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+.howto-step { display: flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 14px; color: var(--ink); }
+.howto-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--mint), var(--gold)); color: #07120f; font-weight: 900; font-size: 13px; }
+
 /* ===================== טעינה ===================== */
 .loading { text-align: center; padding: 40px 16px; color: var(--ink); }
 .loading-crown { font-size: 60px; animation: spin 1.6s linear infinite; display: inline-block; filter: drop-shadow(var(--glow-mint)); }

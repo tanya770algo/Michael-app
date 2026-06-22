@@ -4,10 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>👑 מיכאל המלך - תווים 🎹</title>
+  <meta name="description" content="מיכאל המלך - תווים: מעלים שיר ומגלים אילו תווים לנגן בפסנתר, בעברית. עם מקלדת, האטה ומשחק תרגול.">
+  <meta name="theme-color" content="#0e1620">
+  <meta property="og:title" content="👑 מיכאל המלך - תווים 🎹">
+  <meta property="og:description" content="מעלים שיר — ומגלים אילו תווים לנגן, בעברית.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}?v=4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4">
 </head>
 <body>
   <div class="bg-sky"></div>
@@ -52,6 +58,12 @@
         <span class="notice-text">מיכאל המלך הכי טוב בזיהוי שירים עם מנגינה ברורה (פסנתר/שירה).
         בשירים עם הרבה כלים ביחד הוא עלול לטעות בכמה תווים — בדיוק כמו שגם אנחנו צריכים תרגול! 🎶</span>
         <button class="notice-close" id="noticeClose" aria-label="סגירה">✕</button>
+      </div>
+
+      <div class="howto">
+        <div class="howto-step"><span class="howto-num">1</span> מעלים שיר 🎵</div>
+        <div class="howto-step"><span class="howto-num">2</span> מקבלים תווים בעברית 🎼</div>
+        <div class="howto-step"><span class="howto-num">3</span> מנגנים ומתרגלים 🎹</div>
       </div>
     </section>
 
@@ -114,9 +126,9 @@
   <div id="gameOverlay" class="game-overlay hidden"></div>
   <div id="toast" class="toast hidden"></div>
 
-  <script src="{{ url_for('static', filename='js/core.js') }}?v=3"></script>
-  <script src="{{ url_for('static', filename='js/piano.js') }}?v=3"></script>
-  <script src="{{ url_for('static', filename='js/game.js') }}?v=3"></script>
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=3"></script>
+  <script src="{{ url_for('static', filename='js/core.js') }}?v=4"></script>
+  <script src="{{ url_for('static', filename='js/piano.js') }}?v=4"></script>
+  <script src="{{ url_for('static', filename='js/game.js') }}?v=4"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=4"></script>
 </body>
 </html>

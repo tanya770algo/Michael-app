@@ -19,9 +19,10 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
-    # תקרת גודל קובץ העלאה (25MB). Klangio מגביל גם את *אורך* האודיו
-    # (15 שניות בחבילה החינמית, 300 שניות בחבילות בתשלום).
-    app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
+    # תקרת גודל קובץ העלאה (100MB) - יותר מספיק לכל שיר, גם באיכות WAV גבוהה.
+    # שימו לב: המגבלה האמיתית היא *אורך* האודיו ב-Klangio (עד ~5 דקות בחבילות בתשלום),
+    # לא גודל הקובץ ולא חבילת השרת.
+    app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
 
     # מפתח ה-API וה-model נטענים מסביבה בלבד - אף פעם לא כתובים בקוד.
     app.config["KLANGIO_API_KEY"] = os.environ.get("KLANGIO_API_KEY", "").strip()
@@ -44,7 +45,7 @@ def create_app():
         return (
             jsonify(
                 error="too_large",
-                message="הקובץ גדול מדי 😅 נסו קובץ קצר וקטן יותר (עד 25MB).",
+                message="הקובץ גדול מדי 😅 נסו קובץ קצר יותר (עד 100MB, ועד ~5 דקות).",
             ),
             413,
         )
