@@ -7,10 +7,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3">
 </head>
 <body>
   <div class="bg-sky"></div>
+
+  <!-- ===== מסך פתיחה ===== -->
+  <div id="welcome" class="welcome">
+    <div class="welcome-mark">🎹</div>
+    <div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <h1 class="welcome-title">היי מיכאל 👋</h1>
+    <p class="welcome-sub">מה שלומך? בוא ננגן! 🎶</p>
+    <button id="startBtn" class="btn-start">▶ בוא נשחק</button>
+  </div>
 
   <header class="app-header">
     <div class="crown-wrap">
@@ -20,7 +29,7 @@
       <div class="crown">👑</div>
     </div>
     <h1>מיכאל המלך <span class="subtitle">תווים</span> 🎹</h1>
-    <p class="tagline">מעלים שיר — ומגלים אילו תווים לנגן!</p>
+    <p class="tagline">מעלים שיר — ומגלים אילו תווים לנגן</p>
   </header>
 
   <main class="container">
@@ -99,20 +108,15 @@
 
   </main>
 
-  <footer class="app-footer">בהצלחה למיכאל המלך! 👑🎶</footer>
+  <footer class="app-footer">מיכאל המלך 👑🎶</footer>
 
-  <!-- נגן אודיו מוסתר (לשירים מקובץ) -->
   <audio id="audioEl" preload="auto"></audio>
-
-  <!-- שכבת מצב המשחק -->
   <div id="gameOverlay" class="game-overlay hidden"></div>
-
-  <!-- הודעות קופצות -->
   <div id="toast" class="toast hidden"></div>
 
-  <script src="{{ url_for('static', filename='js/core.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/piano.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/core.js') }}?v=3"></script>
+  <script src="{{ url_for('static', filename='js/piano.js') }}?v=3"></script>
+  <script src="{{ url_for('static', filename='js/game.js') }}?v=3"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=3"></script>
 </body>
 </html>

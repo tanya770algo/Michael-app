@@ -12,6 +12,7 @@
   function api(path, opts) { return fetch('/api/michael-king' + path, opts); }
 
   var el = {
+    welcome: $('welcome'), startBtn: $('startBtn'),
     uploadSection: $('uploadSection'), dropZone: $('dropZone'), fileInput: $('fileInput'),
     chooseBtn: $('chooseBtn'), demoBtn: $('demoBtn'),
     accuracyNotice: $('accuracyNotice'), noticeClose: $('noticeClose'),
@@ -164,7 +165,7 @@
     state.cardEls = state.notes.map(function (n) {
       var c = document.createElement('div');
       c.className = 'note-card' + (MK.isSharp(n.noteName) ? ' sharp' : '');
-      c.style.background = MK.noteColor(n.noteName);
+      c.style.setProperty('--nc', MK.noteColor(n.noteName));
       var nm = document.createElement('div'); nm.className = 'nname'; nm.textContent = n.noteName;
       var oc = document.createElement('div'); oc.className = 'noct'; oc.textContent = 'אוקטבה ' + n.octave;
       c.appendChild(nm); c.appendChild(oc);
@@ -315,6 +316,14 @@
   }
 
   // ---------------- synth (Web Audio) ----------------
+  // "מחמם" את מנוע האודיו בתוך מחווה של המשתמש (חשוב ל-iOS, ששם הקול חסום עד מגע).
+  function primeAudio() {
+    try {
+      ensureCtx();
+      if (state.synthCtx && state.synthCtx.state === 'suspended') state.synthCtx.resume();
+    } catch (e) {}
+  }
+
   function ensureCtx() {
     if (!state.synthCtx) {
       var AC = window.AudioContext || window.webkitAudioContext;
@@ -446,6 +455,17 @@
       state.isPlaying = false; el.playBtn.textContent = '▶️';
       stopHighlight(); updateProgress(state.duration); updateActive(state.duration + 1);
     });
+
+    // מסך הפתיחה: לחיצה על "בוא נשחק" מפעילה את האודיו (ל-iOS) ומסתירה את המסך.
+    if (el.startBtn) {
+      el.startBtn.addEventListener('click', function () {
+        primeAudio();
+        if (el.welcome) {
+          el.welcome.classList.add('fade');
+          setTimeout(function () { el.welcome.classList.add('hidden'); }, 500);
+        }
+      });
+    }
 
     loadMySongs();
   }

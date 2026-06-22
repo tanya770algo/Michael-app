@@ -1,20 +1,25 @@
 /*
- * game.js - מצב משחק "נגנו אחריי".
- * זיהוי גובה הצליל מהמיקרופון קורה כולו בצד הדפדפן (autocorrelation),
- * כי זיהוי בזמן אמת חייב להיות מקומי - אי אפשר לשלוח כל רגע לשרת בלי השהיה.
- * ההשוואה לתו המבוקש היא לפי *שם התו* (בלי תלות באוקטבה) - ידידותי לילד מתחיל.
+ * game.js - מצב משחק "נגנו אחריי" (זיהוי מיקרופון בזמן אמת, בצד הדפדפן).
+ *
+ * שיפורי דיוק חשובים:
+ *  1. מבטלים עיבוד אודיו של הדפדפן (echoCancellation/noiseSuppression/autoGainControl)
+ *     — הם מעוותים צליל מוזיקלי וגורמים לזיהוי גרוע, במיוחד בנייד.
+ *  2. מפעילים AudioContext.resume() — ב-iOS מנוע הקול מתחיל "מושהה" עד מגע.
+ *  3. אלגוריתם NSDF (McLeod) מוגבל לטווח מוזיקלי — יציב ועמיד לטעויות אוקטבה.
+ *  4. התאמה סלחנית: התו הנכון נספר אם הופיע כמה פעמים בחלון קצר (לא חייב ברצף מושלם).
+ *     ההשוואה לפי *שם התו* בלבד (בלי תלות באוקטבה) — ידידותי לילד.
  */
 window.MKGame = (function () {
   var ctx, analyser, micStream, rafId, buf;
   var targets = [], idx = 0, streak = 0, best = 0, correct = 0, total = 0;
-  var opts = null, stableCount = 0, locked = false;
+  var opts = null, locked = false, recent = [];
   var overlay = document.getElementById('gameOverlay');
 
   function start(o) {
     opts = o || {};
     buildTargets(opts.notes);
-    if (!targets.length) { return; }
-    idx = 0; streak = 0; best = 0; correct = 0; total = targets.length; locked = false;
+    if (!targets.length) return;
+    idx = 0; streak = 0; best = 0; correct = 0; total = targets.length; locked = false; recent = [];
     renderGameUI();
     overlay.classList.remove('hidden');
     requestMic();
@@ -26,12 +31,11 @@ window.MKGame = (function () {
     (notes || []).forEach(function (n) {
       if (targets.length >= 12) return;
       var key = n.noteName + n.octave;
-      if (key !== prev && !MK.isSharp(n.noteName)) { // נתמקד בתווים טבעיים למשחק
+      if (key !== prev && !MK.isSharp(n.noteName)) {
         targets.push({ noteName: n.noteName, octave: n.octave, midi: n.midi });
         prev = key;
       }
     });
-    // אם כל התווים היו דיאזים (נדיר), ניקח גם אותם
     if (!targets.length) {
       prev = null;
       (notes || []).forEach(function (n) {
@@ -60,11 +64,17 @@ window.MKGame = (function () {
     var fb = document.createElement('div'); fb.className = 'game-feedback'; fb.id = 'gameFb';
     var heard = document.createElement('div'); heard.className = 'game-heard'; heard.id = 'gameHeard';
 
+    var listen = document.createElement('div');
+    listen.className = 'game-listen'; listen.id = 'gameListen';
+    listen.innerHTML = '<span></span><span></span><span></span><span></span><span></span>';
+    listen.style.visibility = 'hidden';
+
     overlay.appendChild(exit);
     overlay.appendChild(h);
     overlay.appendChild(target);
     overlay.appendChild(prog);
     overlay.appendChild(streakEl);
+    overlay.appendChild(listen);
     overlay.appendChild(fb);
     overlay.appendChild(heard);
     showTarget();
@@ -73,30 +83,42 @@ window.MKGame = (function () {
   function showTarget() {
     var t = targets[idx];
     var tEl = document.getElementById('gameTarget');
-    tEl.style.background = MK.noteColor(t.noteName);
+    tEl.style.setProperty('--nc', MK.noteColor(t.noteName));
     tEl.classList.remove('hit');
     tEl.innerHTML = '<div class="gname">' + t.noteName + '</div><div class="goct">אוקטבה ' + t.octave + '</div>';
     document.getElementById('gameProg').textContent = 'תו ' + (idx + 1) + ' מתוך ' + targets.length;
     document.getElementById('gameStreak').textContent = '🔥 רצף: ' + streak;
     document.getElementById('gameFb').textContent = '';
     document.getElementById('gameHeard').textContent = '';
-    stableCount = 0; locked = false;
+    locked = false; recent = [];
   }
 
   function requestMic() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      noMic('הדפדפן הזה לא תומך במיקרופון 🎤 אבל אפשר תמיד פשוט להאזין לשיר ולעקוב אחרי התווים!');
+      noMic('הדפדפן הזה לא תומך במיקרופון 🎤 אבל תמיד אפשר פשוט להאזין לשיר ולעקוב אחרי התווים!');
       return;
     }
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    // ביטול עיבוד האודיו של הדפדפן — קריטי לזיהוי תווים נקי (בעיקר בנייד).
+    navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        channelCount: 1
+      }
+    }).then(function (stream) {
       micStream = stream;
       var AC = window.AudioContext || window.webkitAudioContext;
       ctx = new AC();
+      if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
       var src = ctx.createMediaStreamSource(stream);
       analyser = ctx.createAnalyser();
       analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0;
       buf = new Float32Array(analyser.fftSize);
       src.connect(analyser);
+      var lst = document.getElementById('gameListen');
+      if (lst) lst.style.visibility = 'visible';
       listen();
     }).catch(function () {
       noMic('כדי לשחק צריך לאשר את המיקרופון 🎤 אפשר גם פשוט להאזין לשיר ולעקוב אחרי התווים!');
@@ -106,7 +128,7 @@ window.MKGame = (function () {
   function noMic(msg) {
     overlay.innerHTML = '';
     var box = document.createElement('div');
-    box.innerHTML = '<div style="font-size:64px">🎤</div><p style="max-width:440px;font-size:20px">' + msg + '</p>';
+    box.innerHTML = '<div style="font-size:60px">🎤</div><p style="max-width:440px;font-size:19px">' + msg + '</p>';
     var b = document.createElement('button');
     b.className = 'btn game-bigbtn';
     b.textContent = 'חזרה לשיר';
@@ -117,18 +139,20 @@ window.MKGame = (function () {
 
   function listen() {
     analyser.getFloatTimeDomainData(buf);
-    var freq = autoCorrelate(buf, ctx.sampleRate);
+    var freq = detectPitch(buf, ctx.sampleRate);
     if (freq > 0 && !locked) {
       var midi = Math.round(69 + 12 * Math.log2(freq / 440));
       var det = MK.nameFromMidi(midi);
       var heardEl = document.getElementById('gameHeard');
       if (heardEl) heardEl.textContent = 'שומע: ' + det.name;
-      if (det.name === targets[idx].noteName) {
-        stableCount++;
-        if (stableCount >= 3) success();
-      } else {
-        stableCount = 0;
+
+      recent.push(det.name);
+      if (recent.length > 12) recent.shift();
+      var hits = 0;
+      for (var k = 0; k < recent.length; k++) {
+        if (recent[k] === targets[idx].noteName) hits++;
       }
+      if (hits >= 3) success();
     }
     rafId = requestAnimationFrame(listen);
   }
@@ -154,16 +178,16 @@ window.MKGame = (function () {
       fetch('/api/michael-king/songs/' + opts.songId + '/streak', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ streak: best }),
+        body: JSON.stringify({ streak: best })
       }).catch(function () {});
     }
     overlay.innerHTML = '';
     var box = document.createElement('div');
     box.innerHTML =
-      '<div style="font-size:84px">👑</div>' +
+      '<div style="font-size:80px">👑</div>' +
       '<h2>המלך מיכאל גאה בך!</h2>' +
-      '<p style="font-size:24px">פגעת ב-' + correct + ' מתוך ' + total + ' תווים 🎉</p>' +
-      '<p style="font-size:20px">🔥 הרצף הכי טוב: ' + best + '</p>';
+      '<p style="font-size:23px">פגעת ב-' + correct + ' מתוך ' + total + ' תווים 🎉</p>' +
+      '<p style="font-size:19px">🔥 הרצף הכי טוב: ' + best + '</p>';
     var again = document.createElement('button');
     again.className = 'btn game-bigbtn';
     again.textContent = '🎮 עוד פעם';
@@ -203,37 +227,34 @@ window.MKGame = (function () {
     }
   }
 
-  // אלגוריתם autocorrelation סטנדרטי לזיהוי גובה צליל (מבוסס על Chris Wilson, MIT).
-  function autoCorrelate(buffer, sampleRate) {
+  /*
+   * זיהוי גובה צליל יציב מבוסס NSDF (Normalized Square Difference, שיטת McLeod),
+   * מוגבל לטווח התדרים המוזיקלי (לביצועים ולעמידות). מחזיר תדר ב-Hz, או -1 אם אין צליל ברור.
+   */
+  function detectPitch(buffer, sampleRate) {
     var SIZE = buffer.length;
     var rms = 0;
-    for (var i = 0; i < SIZE; i++) { var v = buffer[i]; rms += v * v; }
+    for (var i = 0; i < SIZE; i++) rms += buffer[i] * buffer[i];
     rms = Math.sqrt(rms / SIZE);
-    if (rms < 0.01) return -1; // שקט - אין צליל ברור
+    if (rms < 0.006) return -1; // שקט מדי
 
-    var r1 = 0, r2 = SIZE - 1, thres = 0.2;
-    for (var i1 = 0; i1 < SIZE / 2; i1++) { if (Math.abs(buffer[i1]) < thres) { r1 = i1; break; } }
-    for (var i2 = 1; i2 < SIZE / 2; i2++) { if (Math.abs(buffer[SIZE - i2]) < thres) { r2 = SIZE - i2; break; } }
+    var minFreq = 75, maxFreq = 1350;
+    var maxLag = Math.min(SIZE - 2, Math.floor(sampleRate / minFreq));
+    var minLag = Math.max(2, Math.floor(sampleRate / maxFreq));
 
-    var buf2 = buffer.slice(r1, r2);
-    var SIZE2 = buf2.length;
-    var c = new Array(SIZE2).fill(0);
-    for (var i3 = 0; i3 < SIZE2; i3++) {
-      for (var j = 0; j < SIZE2 - i3; j++) { c[i3] += buf2[j] * buf2[j + i3]; }
+    var bestLag = -1, bestVal = 0;
+    for (var lag = minLag; lag <= maxLag; lag++) {
+      var acf = 0, norm = 0;
+      for (var j = 0; j < SIZE - lag; j++) {
+        var a = buffer[j], b = buffer[j + lag];
+        acf += a * b;
+        norm += a * a + b * b;
+      }
+      var nsdf = norm > 0 ? (2 * acf / norm) : 0;
+      if (nsdf > bestVal) { bestVal = nsdf; bestLag = lag; }
     }
-
-    var d = 0; while (d < SIZE2 - 1 && c[d] > c[d + 1]) d++;
-    var maxval = -1, maxpos = -1;
-    for (var i4 = d; i4 < SIZE2; i4++) { if (c[i4] > maxval) { maxval = c[i4]; maxpos = i4; } }
-    if (maxpos <= 0) return -1;
-
-    var T0 = maxpos;
-    var x1 = c[T0 - 1] || 0, x2 = c[T0], x3 = c[T0 + 1] || 0;
-    var a = (x1 + x3 - 2 * x2) / 2;
-    var b = (x3 - x1) / 2;
-    if (a) T0 = T0 - b / (2 * a);
-
-    return sampleRate / T0;
+    if (bestLag < 0 || bestVal < 0.4) return -1; // לא מספיק מחזורי -> כנראה רעש
+    return sampleRate / bestLag;
   }
 
   return { start: start, stop: stop };
